@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar mode="md" color="primary">
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="logOut()">
+        <ion-icon slot="icon-only" name="power-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>My Account</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="isLoading" class="ion-text-center account_spinner">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+  <ng-container *ngIf="!isLoading">
+    <ion-list>
+      <ion-item lines="full">
+        <ion-label>
+          <ion-text class="ion-text-uppercase"> {{profile?.name}} </ion-text>
+          <p>{{profile?.phone}} | {{profile?.email}}</p>
+        </ion-label>
+        <ion-button slot="end" color="tertiary" fill="clear">EDIT</ion-button>
+      </ion-item>
+      <ion-item lines="full" [routerLink]="['/','tabs','address']">
+        <ion-icon name="home-outline" slot="start" color="dark"></ion-icon>
+        <h6>Manage Addresses</h6>
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label color="primary" class="pastOrders"> PAST ORDERS </ion-label>
+      </ion-list-header>
+      <!-- orders component -->
+      <ion-text class="ion-text-center" *ngIf="!orders || orders.length===0">
+      <p>  NO ORDERS PLACED YET🙄</p>
+      </ion-text>
+      <app-orders
+        *ngFor="let order of orders"
+        [order]="order"
+        (reorder)="reorder($event)"
+        (help)="getHelp($event)"
+      ></app-orders>
+    </ion-list>
+  </ng-container>
+</ion-content>

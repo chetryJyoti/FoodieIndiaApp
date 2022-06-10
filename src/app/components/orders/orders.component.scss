@@ -1,0 +1,15 @@
+.order_time{
+  margin-top: 1vh;
+}
+.border_bottom{
+  border-bottom: 2px dotted var(--ion-color-medium);
+}
+ion-note{
+  font-size: 1rem;
+  ion-icon{
+    padding-left: 2px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    float: right;
+  }
+}

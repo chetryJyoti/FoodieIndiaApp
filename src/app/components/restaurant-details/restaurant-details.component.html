@@ -1,0 +1,89 @@
+<ion-grid *ngIf="isLoading">
+  <ion-item lines="none" class="ion-padding-horizontal dashedBorderBottom">
+    <ion-label>
+      <h1>
+        <ion-skeleton-text style="width: 90%" animated=""></ion-skeleton-text>
+      </h1>
+      <p>
+        <ion-skeleton-text style="width: 80%" animated=""></ion-skeleton-text>
+      </p>
+      <p>
+        <ion-skeleton-text style="width: 60%" animated=""></ion-skeleton-text>
+      </p>
+    </ion-label>
+  </ion-item>
+  <ion-row class="ion-padding">
+    <ion-col size="4">
+      <ion-label class="ion-text-center">
+        <p>
+          <ion-skeleton-text style="width: 30%" animated=""></ion-skeleton-text>
+        </p>
+        <p>
+          <ion-skeleton-text style="width: 45%" animated=""></ion-skeleton-text>
+        </p>
+      </ion-label>
+    </ion-col>
+
+    <ion-col size="4">
+      <ion-label class="ion-text-center">
+        <p>
+          <ion-skeleton-text style="width: 30%" animated=""></ion-skeleton-text>
+        </p>
+        <p>
+          <ion-skeleton-text style="width: 45%" animated=""></ion-skeleton-text>
+        </p>
+      </ion-label>
+    </ion-col>
+    <ion-col size="4">
+      <ion-label class="ion-text-center">
+        <p>
+          <ion-skeleton-text style="width: 30%" animated=""></ion-skeleton-text>
+        </p>
+        <p>
+          <ion-skeleton-text style="width: 45%" animated=""></ion-skeleton-text>
+        </p>
+      </ion-label>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+
+<!--  -->
+<ion-grid *ngIf="data?.name && !isLoading">
+  <ion-row class="ion-padding-horizontal dashedBorderBottom">
+    <ion-label>
+      <h1>{{ data?.name }}</h1>
+      <ion-text *ngIf="data?.cuisines">
+        <p>{{ getCuisines(data?.cuisines) }}</p>
+      </ion-text>
+      <p>{{ data?.address }}</p>
+    </ion-label>
+  </ion-row>
+  <ion-row class="ion-padding">
+    <ion-col size="4">
+      <ion-label class="ion-text-center">
+        <ion-text>
+          <p>
+            <ion-icon name="star" color="warning"></ion-icon>{{ data?.rating }}
+          </p>
+        </ion-text>
+        <p>Ratings</p>
+      </ion-label>
+    </ion-col>
+    <ion-col size="4">
+      <ion-label class="ion-text-center">
+        <ion-text>
+          <p>{{ data?.deliveryTime }}mins</p>
+        </ion-text>
+        <p>Delivery Time</p>
+      </ion-label>
+    </ion-col>
+    <ion-col size="4">
+      <ion-label class="ion-text-center">
+        <ion-text>
+          <p>₹{{ data?.price }}</p>
+        </ion-text>
+        <p>Price</p>
+      </ion-label>
+    </ion-col>
+  </ion-row>
+</ion-grid>

@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "FoodieIndia",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

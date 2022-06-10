@@ -1,0 +1,17 @@
+ion-row {
+  // margin-right: 2rem;
+  border: 1px solid var(--ion-color-medium);
+  padding: 0.1rem;
+  .quantity {
+    width: 1.4rem;
+  }
+}
+.price_quantity {
+  width: 3rem;
+}
+
+.dotStyle {
+  margin-right: 4px;
+  border: 1px solid var(--ion-color-success);
+  padding: 0 0.2rem;
+}

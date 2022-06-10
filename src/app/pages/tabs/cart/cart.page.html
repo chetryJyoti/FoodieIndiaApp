@@ -1,0 +1,128 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start" *ngIf="urlCheck && urlCheck!=='tabs'">
+      <ion-back-button [defaultHref]="getPreviousUrl()"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="tertiary">Cart</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-empty-screen *ngIf="!model?.restaurant"></app-empty-screen>
+  <ng-container *ngIf="model?.restaurant">
+    <ion-list lines="none">
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-img
+            [src]="model?.restaurant?.cover ? model.restaurant.cover:'assets/bannerImgs/b2.jpg'"
+          ></ion-img>
+        </ion-thumbnail>
+        <ion-label>
+          <ion-text><h4>{{model?.restaurant?.name}}</h4> </ion-text>
+          <ion-note>{{model?.restaurant?.address}} </ion-note>
+        </ion-label>
+      </ion-item>
+      <!-- app-cart-item component -->
+      <app-cart-item
+        *ngFor="let item of model?.items;let i =index"
+        [item]="item"
+        [index]="i"
+        (add)="quantityPlus($event)"
+        (minus)="quantityMinus($event)"
+      ></app-cart-item>
+    </ion-list>
+
+    <ion-item lines="none">
+      <ion-icon slot="start" name="list-outline"></ion-icon>
+      <ion-input
+        type="text"
+        placeholder="Add any instructions!!"
+        [(ngModel)]="instruction"
+      ></ion-input>
+    </ion-item>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label color="tertiary"> <h3>Billing details:</h3></ion-label>
+      </ion-list-header>
+      <ion-item lines="none">
+        <ion-label color="dark"> Item total </ion-label>
+        <ion-text slot="end" color="dark">₹{{model?.totalPrice}} </ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label color="dark"> Delivery Charge </ion-label>
+        <ion-text slot="end" color="dark"
+          >₹{{(model?.deliveryCharge) | number:'0.2-2'}}
+        </ion-text>
+      </ion-item>
+      <ion-item lines="none" class="grandTotal">
+        <ion-label color="dark"> Total </ion-label>
+        <ion-text slot="end" color="dark">
+          <h3>₹{{model?.grandTotal}}</h3>
+        </ion-text>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+</ion-content>
+
+<ion-footer *ngIf="model?.restaurant">
+  <ion-toolbar>
+    <!-- for address -->
+    <ion-row *ngIf="!location?.lat">
+      <ion-col size="6">
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="success"
+          (click)="addAddress()"
+        >
+          Add address</ion-button
+        >
+      </ion-col>
+      <ion-col size="6">
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="success"
+          (click)="changeAddress()"
+        >
+          Change Address</ion-button
+        >
+      </ion-col>
+    </ion-row>
+
+    <!-- for payment -->
+    <ion-item lines="none" *ngIf="location?.lat">
+      <ion-button fill="clear" size="small" slot="end" [class]="changeAddress()"
+        >Change</ion-button
+      >
+      <ion-icon name="location" color="tertiary" slot="start"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h5>Deliver to home</h5>
+        <ion-text color="medium"
+          ><p>Jorhat engineering college,Hostel 6,Gurmur</p></ion-text
+        >
+      </ion-label>
+    </ion-item>
+    <ion-row *ngIf="location?.lat">
+      <ion-col size="6" class="ion-no-padding" (click)="scrollToBottom()">
+        <ion-item color="light" class="ion-no-padding" lines="none">
+          <ion-label>
+            <h3>₹{{model?.grandTotal}}</h3>
+            <ion-text class="detailed_bill" color="secondary">
+              View Detailed Bill
+              <ion-icon name="chevron-down-outline"></ion-icon>
+            </ion-text>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+      <ion-col
+        size="6"
+        class="ion-text-center paymentBtn"
+        (click)="makePayment()"
+      >
+        <ion-button color="light" fill="clear">Make payment</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>
