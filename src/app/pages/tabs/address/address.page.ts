@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { GlobalService } from 'src/app/services/global/global.service';
 
 @Component({
   selector: 'app-address',
@@ -8,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class AddressPage implements OnInit {
   isLoading = true;
   addresses: any[] = [];
-  constructor() {}
+  constructor(private global: GlobalService) {}
 
   ngOnInit() {
     this.getAddresses();
@@ -38,20 +39,13 @@ export class AddressPage implements OnInit {
           userId: '1',
         },
       ];
-      this.isLoading = false;
+      this.isLoading=false;
     }, 3000);
   }
   getIcons(title) {
-    const name = title.toLowerCase();
-    switch (name) {
-      case 'home':
-        return 'home-outline';
-      case 'work':
-        return 'briefcase-outline';
-      default:
-        return 'location-outline';
-    }
+    return this.global.getIcons(title);
   }
+
   editAddress(address) {
     console.log(address);
   }
