@@ -1,88 +1,103 @@
-import { Component, OnInit } from '@angular/core';
+/* eslint-disable prefer-const */
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { Storage } from '@capacitor/storage';
+import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api/api.service';
+import { CartService } from 'src/app/services/cart/cart.service';
+import { take } from 'rxjs/operators';
+
 @Component({
   selector: 'app-items',
   templateUrl: './items.page.html',
   styleUrls: ['./items.page.scss'],
 })
-export class ItemsPage implements OnInit {
-  isLoading: boolean;
+export class ItemsPage implements OnInit, OnDestroy {
   id: any;
   data: any = {};
   items: any[] = [];
+  veg = false;
+  isLoading: boolean;
   cartData: any = {};
   storedData: any = {};
   model = {
     icon: 'fast-food-outline',
-    title: 'No menu available',
+    title: 'No Menu Available',
   };
-  veg = false;
-  restaurants: any[] = [];
+  // restaurants: any[] = [];
   categories: any[] = [];
   allItems: any[] = [];
-
+  cartSub: Subscription;
+  // routeSub: Subscription;
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private router: Router,
-    private api: ApiService
+    private api: ApiService,
+    private cartService: CartService
   ) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe((paraMap) => {
-      console.log('Data', paraMap);
-      if (!paraMap.has('restaurantId')) {
+    this.route.paramMap.pipe(take(1)).subscribe((paramMap) => {
+      console.log('route data: ', paramMap);
+      if (!paramMap.has('restaurantId')) {
         this.navCtrl.back();
         return;
       }
-      this.id = paraMap.get('restaurantId');
-      console.log('RestaurantId:', this.id);
-      this.restaurants = this.api.restaurants1;
-      this.categories = this.api.categories;
-      this.allItems = this.api.allItems;
-      this.getItems();
+      this.id = paramMap.get('restaurantId');
+      console.log('id: ', this.id);
     });
-  }
-  getCart() {
-    return Storage.get({ key: 'cart' });
-  }
-  async getItems() {
-    this.isLoading = true;
-    this.data = {};
-    this.cartData = {};
-    this.storedData = {};
-    setTimeout(async () => {
-      let data: any = this.restaurants.filter((x) => x.uid === this.id);
-      this.data = data[0];
-      this.categories = this.categories.filter((x) => x.uid === this.id);
-      this.items = this.allItems.filter((x) => x.uid === this.id);
-      console.log('restaurantData:', this.data);
-      let cart: any = await this.getCart();
-      console.log('Cart:', cart);
-      if (cart?.value) {
-        this.storedData = JSON.parse(cart.value);
-        console.log('StoredData:', this.storedData);
-        if (
-          this.id === this.storedData.restaurant.uid &&
-          this.allItems.length > 0
-        ) {
-          this.allItems.forEach((element: any) => {
-            this.storedData.items.forEach((ele) => {
-              if (element.id !== ele.id) {
-                return;
-              }
-              element.quantity = ele.quantity;
-            });
-          });
-        }
+    this.cartSub = this.cartService.cart.subscribe((cart) => {
+      console.log('cart items: ', cart);
+      if (cart) {
+        this.cartData = {};
+        this.storedData = {};
+        this.storedData = cart;
         this.cartData.totalItem = this.storedData.totalItem;
         this.cartData.totalPrice = this.storedData.totalPrice;
+        if (cart?.restaurant?.uid === this.id) {
+          this.allItems.forEach((element) => {
+            cart.items.forEach((element2) => {
+              if (element.id !== element2.id) {
+                return;
+              }
+              element.quantity = element2.quantity;
+            });
+          });
+          console.log('allitems: ', this.allItems);
+          this.cartData.items = this.allItems.filter((x) => x.quantity > 0);
+          if (this.veg === true) {
+            this.items = this.allItems.filter((x) => x.veg === true);
+          } else {
+            this.items = [...this.allItems];
+          }
+        }
       }
-      this.isLoading = false;
-    }, 3000);
+    });
+    this.getItems();
+  }
+
+  async getItems() {
+    try {
+      this.isLoading = true;
+      this.data = {};
+      this.cartData = {};
+      this.storedData = {};
+      setTimeout(async () => {
+        // this.categories = this.api.categories;
+        this.allItems = this.api.allItems;
+        let data: any = this.api.restaurants1.filter((x) => x.uid === this.id);
+        this.data = data[0];
+        this.categories = this.api.categories.filter((x) => x.uid === this.id);
+        this.allItems = this.api.allItems.filter((x) => x.uid === this.id);
+        this.items = [...this.allItems];
+        console.log('restaurant: ', this.data);
+        await this.cartService.getCartData();
+        this.isLoading = false;
+      }, 3000);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   vegOnly(event) {
@@ -93,66 +108,64 @@ export class ItemsPage implements OnInit {
     } else {
       this.items = this.allItems;
     }
+    console.log('items: ', this.items);
   }
-  quantityPlus(index) {
-    try {
-      console.log(this.items[index]);
-      if (!this.items[index].quantity || this.items[index].quantity === 0) {
-        this.items[index].quantity = 1;
-        this.calculate();
+
+  quantityPlus(item) {
+    const index = this.allItems.findIndex((x) => x.id === item.id);
+    console.log(index);
+    if (!this.allItems[index].quantity || this.allItems[index].quantity == 0) {
+      if (
+        !this.storedData.restaurant ||
+        (this.storedData.restaurant &&
+          this.storedData.restaurant.uid == this.id)
+      ) {
+        this.cartService.quantityPlus(index, this.allItems, this.data);
       } else {
-        this.items[index].quantity += 1;
-        this.calculate();
+        // alert for clear cart
+        this.cartService.alertClearCart(index, this.allItems, this.data);
       }
-    } catch (e) {
-      console.log(e);
-    }
-  }
-  quantityMinus(index) {
-    if (this.items[index].quantity !== 0) {
-      this.items[index].quantity -= 1;
     } else {
-      this.items[index].quantity = 0;
+      this.cartService.quantityPlus(index, this.allItems, this.data);
     }
-    this.calculate();
   }
-  calculate() {
-    console.log(this.items);
-    this.cartData.items = [];
-    let item = this.items.filter((x) => x.quantity > 0);
-    console.log('Added items:', item);
-    this.cartData.items = item;
-    this.cartData.totalPrice = 0;
-    this.cartData.totalItem = 0;
-    item.forEach((element) => {
-      this.cartData.totalItem += element.quantity;
-      this.cartData.totalPrice +=
-        parseFloat(element.price) * parseFloat(element.quantity);
-    });
-    this.cartData.totalPrice = parseFloat(this.cartData.totalPrice).toFixed(2);
-    if (this.cartData.totalItem === 0) {
-      this.cartData.totalItem = 0;
-      this.cartData.totalPrice = 0;
-    }
-    console.log('cartData:', this.cartData);
+
+  quantityMinus(item) {
+    const index = this.allItems.findIndex((x) => x.id === item.id);
+    this.cartService.quantityMinus(index);
   }
-  saveTocart() {
+
+  saveToCart() {
     try {
       this.cartData.restaurant = {};
       this.cartData.restaurant = this.data;
-      console.log('addtoCart:', this.cartData);
-      Storage.set({
-        key: 'cart',
-        value: JSON.stringify(this.cartData),
-      });
+      console.log('save cartData: ', this.cartData);
+      this.cartService.saveCart();
     } catch (e) {
       console.log(e);
     }
   }
+
   async viewCart() {
+    console.log('save cartdata: ', this.cartData);
     if (this.cartData.items && this.cartData.items.length > 0) {
-      await this.saveTocart();
+      await this.saveToCart();
     }
+    console.log('router url: ', this.router.url);
     this.router.navigate([this.router.url + '/cart']);
+  }
+
+  async ionViewWillLeave() {
+    console.log('ionViewWillLeave ItemsPage');
+    if (this.cartData?.items && this.cartData?.items.length > 0) {
+      await this.saveToCart();
+    }
+    // if(this.routeSub) this.routeSub.unsubscribe();
+  }
+
+  ngOnDestroy() {
+    if (this.cartSub) {
+      this.cartSub.unsubscribe();
+    }
   }
 }

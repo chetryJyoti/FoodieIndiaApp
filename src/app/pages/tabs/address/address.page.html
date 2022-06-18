@@ -10,11 +10,15 @@
 </ion-header>
 
 <ion-content>
-  <div *ngIf="isLoading" class="ion-text-center account_spinner">
+  <!-- <div *ngIf="isLoading" class="ion-text-center account_spinner">
     <ion-spinner color="success"></ion-spinner>
-  </div>
+  </div> -->
+  <app-empty-screen
+    *ngIf="!isLoading && addresses.length===0"
+    [model]="model"
+  ></app-empty-screen>
 
-  <ion-list *ngIf="!isLoading && addresses?.length>0 ">
+  <ion-list *ngIf="!isLoading && addresses?.length ">
     <ion-item-divider> SAVED ADDRESSES </ion-item-divider>
     <ion-item
       lines="full"
@@ -30,11 +34,17 @@
           </p>
         </ion-text>
         <ion-row>
-          <ion-button fill="clear" color="success" (click)="editAddress(address)"
+          <ion-button
+            fill="clear"
+            color="success"
+            (click)="editAddress(address)"
             >EDIT</ion-button
           >
 
-          <ion-button fill="clear" color="primary" (click)="deleteAddress(address)"
+          <ion-button
+            fill="clear"
+            color="primary"
+            (click)="deleteAddress(address)"
             >DELETE</ion-button
           >
         </ion-row>
