@@ -1,4 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Address } from 'src/app/models/address.model';
+import { Categories } from 'src/app/models/categories.model';
+import { Item } from 'src/app/models/item.model';
+import { Restaurant } from 'src/app/models/restaurant.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +23,7 @@ export class ApiService {
       banner: 'assets/bannerImgs/b4.jpg',
     },
   ];
-  restaurants = [
+  restaurants: Restaurant[] = [
     {
       uid: 'r1',
       name: 'Yaaro Ka Adda',
@@ -55,7 +59,7 @@ export class ApiService {
     },
   ];
   // search page data
-  allRestaurants: any[] = [
+  allRestaurants: Restaurant[] = [
     {
       uid: 'r1',
       name: 'Yaaro Ka Adda',
@@ -91,7 +95,7 @@ export class ApiService {
     },
   ];
   // items page data
-  restaurants1: any[] = [
+  restaurants1: Restaurant[] = [
     {
       uid: 'r1',
       name: 'Yaaro Ka Adda',
@@ -129,7 +133,7 @@ export class ApiService {
       address: 'Ledo,Assam',
     },
   ];
-  categories: any[] = [
+  categories: Categories[] = [
     {
       id: 'e00',
       name: 'Italian',
@@ -147,7 +151,7 @@ export class ApiService {
     },
   ];
 
-  allItems: any[] = [
+  allItems: Item[] = [
     {
       categoryId: 'e0',
       cover: 'assets/itemsImgs/item1.jpg',
@@ -201,7 +205,7 @@ export class ApiService {
       veg: false,
     },
   ];
-  addresses: any[] = [
+  addresses: Address[] = [
     {
       address: 'Jorhat,Assam, India',
       house: 'Gurmur',

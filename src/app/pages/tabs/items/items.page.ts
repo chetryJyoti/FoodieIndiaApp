@@ -6,6 +6,9 @@ import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api/api.service';
 import { CartService } from 'src/app/services/cart/cart.service';
 import { take } from 'rxjs/operators';
+import { Restaurant } from 'src/app/models/restaurant.model';
+import { Categories } from 'src/app/models/categories.model';
+import { Item } from 'src/app/models/item.model';
 
 @Component({
   selector: 'app-items',
@@ -14,8 +17,8 @@ import { take } from 'rxjs/operators';
 })
 export class ItemsPage implements OnInit, OnDestroy {
   id: any;
-  data: any = {};
-  items: any[] = [];
+  data = {} as Restaurant;
+  items: Item[] = [];
   veg = false;
   isLoading: boolean;
   cartData: any = {};
@@ -24,8 +27,8 @@ export class ItemsPage implements OnInit, OnDestroy {
     icon: 'fast-food-outline',
     title: 'No Menu Available',
   };
-  categories: any[] = [];
-  allItems: any[] = [];
+  categories: Categories[] = [];
+  allItems: Item[] = [];
   cartSub: Subscription;
   constructor(
     private route: ActivatedRoute,
@@ -87,7 +90,7 @@ export class ItemsPage implements OnInit, OnDestroy {
   async getItems() {
     try {
       this.isLoading = true;
-      this.data = {};
+      this.data = {} as Restaurant;
       this.cartData = {};
       this.storedData = {};
       setTimeout(async () => {
@@ -97,6 +100,11 @@ export class ItemsPage implements OnInit, OnDestroy {
         this.data = data[0];
         this.categories = this.api.categories.filter((x) => x.uid === this.id);
         this.allItems = this.api.allItems.filter((x) => x.uid === this.id);
+        // will remove this when we use live data
+        this.allItems.forEach((element, index) => {
+          this.allItems[index].quantity = 0;
+        });
+        //
         this.items = [...this.allItems];
         console.log('restaurant: ', this.data);
         await this.cartService.getCartData();
@@ -139,7 +147,7 @@ export class ItemsPage implements OnInit, OnDestroy {
 
   quantityMinus(item) {
     const index = this.allItems.findIndex((x) => x.id === item.id);
-    this.cartService.quantityMinus(index);
+    this.cartService.quantityMinus(index,this.allItems);
   }
 
   saveToCart() {

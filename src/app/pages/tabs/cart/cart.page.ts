@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { IonContent, NavController } from '@ionic/angular';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
+import { Address } from 'src/app/models/address.model';
+import { Cart } from 'src/app/models/cart.model';
 import { CartService } from 'src/app/services/cart/cart.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { OrdersService } from 'src/app/services/orders/orders.service';
@@ -16,10 +18,10 @@ export class CartPage implements OnInit {
   @ViewChild(IonContent, { static: false }) content: IonContent;
   urlCheck: any;
   url: any;
-  model: any = {};
+  model = {} as Cart;
   deliveryCharge = 36;
   instruction: any;
-  location: any = {};
+  location = {} as Address;
   cartSub: Subscription;
   constructor(
     private router: Router,
@@ -33,7 +35,7 @@ export class CartPage implements OnInit {
       console.log('cart page: ', cart);
       this.model = cart;
       if (!this.model) {
-        this.location = {};
+        this.location = {} as Address;
       }
       console.log('cart page model: ', this.model);
     });
@@ -42,11 +44,21 @@ export class CartPage implements OnInit {
 
   async getData() {
     await this.checkUrl();
-    this.location = {
-      lat: 26.81446123813128,
-      lng: 94.19847979357843,
-      address: 'Jorhat,Assam',
-    };
+    // this.location = {
+    //   lat: 26.81446123813128,
+    //   lng: 94.19847979357843,
+    //   address: 'Jorhat,Assam',
+    // } as Address;
+    this.location = new Address(
+      'address1',
+      'user1',
+      'Address 1',
+      'Jorhat Assam',
+      '',
+      '',
+      26.81446123813128,
+      94.19847979357843
+    );
     await this.cartService.getCartData();
   }
 
@@ -100,7 +112,8 @@ export class CartPage implements OnInit {
       console.log('orderd:', data);
       await this.orderService.placeOrder(data);
       await this.cartService.clearCart();
-      this.global.successToast('Order palced successfully!');
+      this.model = {} as Cart;
+      this.global.successToast('Order placed successfully!');
       this.navCtrl.navigateRoot(['/tabs/account']);
     } catch (e) {
       console.log(e);

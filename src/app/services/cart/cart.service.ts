@@ -3,6 +3,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
+import { Cart } from 'src/app/models/cart.model';
+import { Item } from 'src/app/models/item.model';
+import { Restaurant } from 'src/app/models/restaurant.model';
 import { GlobalService } from '../global/global.service';
 import { StorageService } from '../storage/storage.service';
 
@@ -10,9 +13,9 @@ import { StorageService } from '../storage/storage.service';
   providedIn: 'root',
 })
 export class CartService {
-  model: any = {};
+  model = {} as Cart;
   deliveryCharge = 36;
-  private _cart = new BehaviorSubject<any>(null);
+  private _cart = new BehaviorSubject<Cart>(null);
   constructor(
     private storage: StorageService,
     private global: GlobalService,
@@ -34,13 +37,13 @@ export class CartService {
       this._cart.next(this.model);
     }
   }
-  async quantityPlus(index, items?, restaurant?) {
+  async quantityPlus(index, items?: Item[], restaurant?: Restaurant) {
     try {
       if (items) {
         this.model.items = [...items];
       }
       if (restaurant) {
-        this.model.restaurant = {};
+        // this.model.restaurant = {};
         this.model.restaurant = restaurant;
       }
       console.log('q plus: ', this.model.items[index]);
@@ -52,6 +55,26 @@ export class CartService {
         this.model.items[index].quantity = 1;
       } else {
         this.model.items[index].quantity += 1; // this.model.items[index].quantity = this.model.items[index].quantity + 1
+      }
+      await this.calculate();
+      this._cart.next(this.model);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+  async quantityMinus(index, items?: Item[]) {
+    try {
+      if (items) {
+        this.model.items = [...items];
+      }
+      if (
+        this.model.items[index].quantity &&
+        this.model.items[index].quantity !== 0
+      ) {
+        this.model.items[index].quantity -= 1;
+      } else {
+        this.model.items[index].quantity = 0;
       }
       await this.calculate();
       this._cart.next(this.model);
@@ -81,7 +104,7 @@ export class CartService {
           text: 'Yes',
           handler: () => {
             this.clearCart();
-            this.model = {};
+            this.model = {} as Cart;
             if (order) {
               this.orderToCart(order);
             } else {
@@ -93,29 +116,15 @@ export class CartService {
     );
   }
   async orderToCart(order) {
-    const data = {
-      restaurant: order.restaurant,
-      items: order.order,
-    };
-    this.model = data;
-    await this.calculate();
-    this.saveCart();
-    this._cart.next(data);
-    this.router.navigate(['/', 'tabs', 'restaurants', order.restaurant.uid]);
-  }
-  async quantityMinus(index) {
-    try {
-      if (this.model.items[index].quantity !== 0) {
-        this.model.items[index].quantity -= 1;
-      } else {
-        this.model.items[index].quantity = 0;
-      }
-      await this.calculate();
-      this._cart.next(this.model);
-    } catch (e) {
-      console.log(e);
-      throw e;
-    }
+    // const data = {
+    //   restaurant: order.restaurant,
+    //   items: order.order,
+    // };
+    // this.model = data;
+    // await this.calculate();
+    // this.saveCart();
+    // this._cart.next(data);
+    // this.router.navigate(['/', 'tabs', 'restaurants', order.restaurant.uid]);
   }
 
   async calculate() {
@@ -127,20 +136,23 @@ export class CartService {
     this.model.grandTotal = 0;
     item.forEach((element) => {
       this.model.totalItem += element.quantity;
-      this.model.totalPrice +=
-        parseFloat(element.price) * parseFloat(element.quantity);
+      // this.model.totalPrice +=
+      //   parseFloat(element.price) * parseFloat(element.quantity);
+      this.model.totalPrice += element.price * element.quantity;
     });
     this.model.deliveryCharge = this.deliveryCharge;
-    this.model.totalPrice = parseFloat(this.model.totalPrice).toFixed(2);
-    this.model.grandTotal = (
-      parseFloat(this.model.totalPrice) + parseFloat(this.model.deliveryCharge)
-    ).toFixed(2);
+    // this.model.totalPrice = parseFloat(this.model.totalPrice).toFixed(2);
+    // this.model.grandTotal = (
+    //   parseFloat(this.model.totalPrice) + parseFloat(this.model.deliveryCharge)
+    // ).toFixed(2);
+
+    this.model.grandTotal = this.model.totalPrice + this.model.deliveryCharge;
     if (this.model.totalItem === 0) {
       this.model.totalItem = 0;
       this.model.totalPrice = 0;
       this.model.grandTotal = 0;
       await this.clearCart();
-      this.model = {};
+      this.model = {} as Cart;
     }
     console.log('cartData:', this.model);
   }

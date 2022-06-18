@@ -44,7 +44,7 @@
     <ion-label>
       <h4>
         {{cartData?.totalItem}} Item<span *ngIf="cartData?.totalItem>1">s</span>
-        | ₹{{cartData?.totalPrice}}
+        | ₹{{cartData?.totalPrice | number:'0.2-2'}}
       </h4>
       <ion-text>
         <p>Extra charges may be applicable.</p>

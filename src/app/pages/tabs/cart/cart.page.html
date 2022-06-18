@@ -47,7 +47,7 @@
       </ion-list-header>
       <ion-item lines="none">
         <ion-label color="dark"> Item total </ion-label>
-        <ion-text slot="end" color="dark">₹{{model?.totalPrice}} </ion-text>
+        <ion-text slot="end" color="dark">₹{{model?.totalPrice | number:'0.2-2'}} </ion-text>
       </ion-item>
       <ion-item>
         <ion-label color="dark"> Delivery Charge </ion-label>
@@ -58,7 +58,7 @@
       <ion-item lines="none" class="grandTotal">
         <ion-label color="dark"> Total </ion-label>
         <ion-text slot="end" color="dark">
-          <h3>₹{{model?.grandTotal}}</h3>
+          <h3>₹{{model?.grandTotal | number:'0.2-2'}}</h3>
         </ion-text>
       </ion-item>
     </ion-list>
@@ -108,7 +108,7 @@
       <ion-col size="6" class="ion-no-padding" (click)="scrollToBottom()">
         <ion-item color="light" class="ion-no-padding" lines="none">
           <ion-label>
-            <h3>₹{{model?.grandTotal}}</h3>
+            <h3>₹{{model?.grandTotal | number:'0.2-2'}}</h3>
             <ion-text class="detailed_bill" color="secondary">
               View Detailed Bill
               <ion-icon name="chevron-down-outline"></ion-icon>
