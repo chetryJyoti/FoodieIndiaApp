@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable prefer-const */
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { GlobalService } from '../global/global.service';
 import { StorageService } from '../storage/storage.service';
@@ -12,7 +13,11 @@ export class CartService {
   model: any = {};
   deliveryCharge = 36;
   private _cart = new BehaviorSubject<any>(null);
-  constructor(private storage: StorageService, private global: GlobalService) {}
+  constructor(
+    private storage: StorageService,
+    private global: GlobalService,
+    private router: Router
+  ) {}
   get cart() {
     return this._cart.asObservable();
   }
@@ -22,7 +27,7 @@ export class CartService {
   async getCartData() {
     let data: any = await this.getCart();
     console.log('data: ', data);
-    if(data?.value) {
+    if (data?.value) {
       this.model = await JSON.parse(data.value);
       console.log('model: ', this.model);
       await this.calculate();
@@ -57,9 +62,11 @@ export class CartService {
   }
 
   // to be continued
-  alertClearCart(index, items, data) {
+  alertClearCart(index, items, data, order?) {
     this.global.showAlert(
-      'Your cart contain items from a different restaurant. Would you like to reset your cart before browsing the restaurant?',
+      order
+        ? 'Would you like to reset you cart before reordering?'
+        : 'Your cart contain items from a different restaurant. Would you like to reset your cart before browsing the restaurant?',
       'Items already in Cart',
       [
         {
@@ -75,13 +82,27 @@ export class CartService {
           handler: () => {
             this.clearCart();
             this.model = {};
-            this.quantityPlus(index, items, data);
+            if (order) {
+              this.orderToCart(order);
+            } else {
+              this.quantityPlus(index, items, data);
+            }
           },
         },
       ]
     );
   }
-
+  async orderToCart(order) {
+    const data = {
+      restaurant: order.restaurant,
+      items: order.order,
+    };
+    this.model = data;
+    await this.calculate();
+    this.saveCart();
+    this._cart.next(data);
+    this.router.navigate(['/', 'tabs', 'restaurants', order.restaurant.uid]);
+  }
   async quantityMinus(index) {
     try {
       if (this.model.items[index].quantity !== 0) {
@@ -119,7 +140,7 @@ export class CartService {
       this.model.totalPrice = 0;
       this.model.grandTotal = 0;
       await this.clearCart();
-      this.model = null;
+      this.model = {};
     }
     console.log('cartData:', this.model);
   }

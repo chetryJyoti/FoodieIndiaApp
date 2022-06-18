@@ -30,7 +30,7 @@ export class AddressPage implements OnInit, OnDestroy {
         if (address?.delete) {
           this.addresses = this.addresses.filter((x) => x.id !== address.id);
         } else if (address?.update) {
-          const index = this.addresses.findIndex((x) => x.id == address.id);
+          const index = this.addresses.findIndex((x) => x.id === address.id);
           this.addresses[index] = address;
         } else {
           this.addresses = this.addresses.concat(address);

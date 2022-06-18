@@ -1,5 +1,7 @@
+/* eslint-disable prefer-const */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { CartService } from 'src/app/services/cart/cart.service';
 import { OrdersService } from 'src/app/services/orders/orders.service';
 
 @Component({
@@ -12,7 +14,10 @@ export class AccountPage implements OnInit, OnDestroy {
   profile: any = {};
   orders: any[] = [];
   ordersSub: Subscription;
-  constructor(private orderService: OrdersService) {}
+  constructor(
+    private orderService: OrdersService,
+    private cartService: CartService
+  ) {}
 
   ngOnInit() {
     this.ordersSub = this.orderService.orders.subscribe(
@@ -20,6 +25,15 @@ export class AccountPage implements OnInit, OnDestroy {
         console.log('orderData:', order);
         if (order instanceof Array) {
           this.orders = order;
+        }else{
+          if (order?.delete) {
+            this.orders = this.orders.filter((x) => x.id !== order.id);
+          } else if (order?.update) {
+            const index = this.orders.findIndex((x) => x.id === order.id);
+            this.orders[index] = order;
+          } else {
+            this.orders = this.orders.concat(order);
+          }
         }
       },
       (e) => {
@@ -30,8 +44,15 @@ export class AccountPage implements OnInit, OnDestroy {
   }
 
   logOut() {}
-  reorder(order) {
-    console.log(order);
+
+  async reorder(order) {
+    let data: any = await this.cartService.getCart();
+    console.log('data: ', data);
+    if(data?.value){
+      this.cartService.alertClearCart(null,null,null,order);
+    }else{
+      this.cartService.orderToCart(order);
+    }
   }
   getHelp(order) {
     console.log(order);

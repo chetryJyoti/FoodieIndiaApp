@@ -24,11 +24,9 @@ export class ItemsPage implements OnInit, OnDestroy {
     icon: 'fast-food-outline',
     title: 'No Menu Available',
   };
-  // restaurants: any[] = [];
   categories: any[] = [];
   allItems: any[] = [];
   cartSub: Subscription;
-  // routeSub: Subscription;
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
@@ -49,9 +47,9 @@ export class ItemsPage implements OnInit, OnDestroy {
     });
     this.cartSub = this.cartService.cart.subscribe((cart) => {
       console.log('cart items: ', cart);
-      if (cart) {
-        this.cartData = {};
-        this.storedData = {};
+      this.cartData = {};
+      this.storedData = {};
+      if (cart && cart?.totalItem > 0) {
         this.storedData = cart;
         this.cartData.totalItem = this.storedData.totalItem;
         this.cartData.totalPrice = this.storedData.totalPrice;
@@ -66,6 +64,15 @@ export class ItemsPage implements OnInit, OnDestroy {
           });
           console.log('allitems: ', this.allItems);
           this.cartData.items = this.allItems.filter((x) => x.quantity > 0);
+          if (this.veg === true) {
+            this.items = this.allItems.filter((x) => x.veg === true);
+          } else {
+            this.items = [...this.allItems];
+          }
+        } else {
+          this.allItems.forEach((element) => {
+            element.quantity = 0;
+          });
           if (this.veg === true) {
             this.items = this.allItems.filter((x) => x.veg === true);
           } else {
@@ -114,11 +121,11 @@ export class ItemsPage implements OnInit, OnDestroy {
   quantityPlus(item) {
     const index = this.allItems.findIndex((x) => x.id === item.id);
     console.log(index);
-    if (!this.allItems[index].quantity || this.allItems[index].quantity == 0) {
+    if (!this.allItems[index].quantity || this.allItems[index].quantity === 0) {
       if (
         !this.storedData.restaurant ||
         (this.storedData.restaurant &&
-          this.storedData.restaurant.uid == this.id)
+          this.storedData.restaurant.uid === this.id)
       ) {
         this.cartService.quantityPlus(index, this.allItems, this.data);
       } else {

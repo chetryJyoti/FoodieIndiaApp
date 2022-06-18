@@ -12,7 +12,7 @@
       <ion-label>
         {{ model?.title ? model.title : "Your cart is empty" }}
       </ion-label>
-      <ion-text *ngif="model?.subTitle">
+      <ion-text *ngIf="model?.subTitle">
         <p>{{ model.subTitle }}</p>
       </ion-text>
     </ion-col>
