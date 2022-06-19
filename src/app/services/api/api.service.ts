@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Address } from 'src/app/models/address.model';
 import { Categories } from 'src/app/models/categories.model';
 import { Item } from 'src/app/models/item.model';
+import { Order } from 'src/app/models/order.model';
 import { Restaurant } from 'src/app/models/restaurant.model';
 
 @Injectable({
@@ -227,7 +228,7 @@ export class ApiService {
       userId: '1',
     },
   ];
-  orders: any[] = [
+  orders: Order[] = [
     {
       address: {
         address: 'Indira Nagar Rd, Borsojai, Basistha 781029, India',
@@ -240,7 +241,7 @@ export class ApiService {
         userId: 'UA5JWxgjDOYgfXe92H0pFHwulTz2',
       },
       deliveryCharge: 20,
-      grandTotal: '540.00',
+      grandTotal: 540.00,
       id: '5aG0RsPuze8NX00B7uRP',
       order: [
         {
@@ -298,7 +299,7 @@ export class ApiService {
       restaurantId: 'r1',
       status: 'created',
       time: 'Jul 6, 2020 11:44 AM',
-      total: '520.00',
+      total: 520.00,
       userId: '1',
     },
     {
@@ -313,7 +314,7 @@ export class ApiService {
         userId: 'UA5JWxgjDOYgfXe92H0pFHwulTz2',
       },
       deliveryCharge: 20,
-      grandTotal: '440.00',
+      grandTotal: 440.00,
       id: '5aG0RsPuze8NX00B7uR1',
       order: [
         {
@@ -355,7 +356,7 @@ export class ApiService {
         deliveryTime: 25,
         description: 'dd',
         email: 'stay@fit.com',
-        id: 'r1',
+        uid: 'r1',
         isClose: true,
         latitude: 26.1286243,
         longitude: 91.8012675,
@@ -371,7 +372,7 @@ export class ApiService {
       restaurantId: 'r1',
       status: 'Delivered',
       time: 'Jul 7, 2020 11:44 AM',
-      total: '420.00',
+      total: 420.00,
       userId: '1',
     },
   ];

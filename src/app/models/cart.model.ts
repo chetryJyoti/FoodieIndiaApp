@@ -6,9 +6,9 @@ export class Cart {
   constructor(
     public restaurant: Restaurant,
     public items: Item[],
-    public totalItem: number,
-    public totalPrice: number,
-    public grandTotal: number,
+    public totalItem?: number,
+    public totalPrice?: number,
+    public grandTotal?: number,
     public location?: Address,
     public deliveryCharge?: number
   ) {}

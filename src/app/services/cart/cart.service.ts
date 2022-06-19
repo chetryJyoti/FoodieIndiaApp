@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Cart } from 'src/app/models/cart.model';
 import { Item } from 'src/app/models/item.model';
+import { Order } from 'src/app/models/order.model';
 import { Restaurant } from 'src/app/models/restaurant.model';
 import { GlobalService } from '../global/global.service';
 import { StorageService } from '../storage/storage.service';
@@ -115,16 +116,16 @@ export class CartService {
       ]
     );
   }
-  async orderToCart(order) {
-    // const data = {
-    //   restaurant: order.restaurant,
-    //   items: order.order,
-    // };
-    // this.model = data;
-    // await this.calculate();
-    // this.saveCart();
-    // this._cart.next(data);
-    // this.router.navigate(['/', 'tabs', 'restaurants', order.restaurant.uid]);
+  async orderToCart(order: Order) {
+    const data = {
+      restaurant: order.restaurant,
+      items: order.order,
+    };
+    this.model = data;
+    await this.calculate();
+    this.saveCart();
+    this._cart.next(this.model);
+    this.router.navigate(['/', 'tabs', 'restaurants', order.restaurant.uid]);
   }
 
   async calculate() {

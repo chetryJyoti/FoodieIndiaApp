@@ -8,6 +8,21 @@ export class Restaurant {
   // deliveryTime: 23,
   // price: 100,
   // distance: 5,
+  // deliveryTime: 25,
+  // description: 'dd',
+  // email: 'DosaPlaza@gmail.com',
+  // latitude: 26.1286243,
+  // longitude: 91.8012675,
+  // uid: 'r1',
+  // isClose: true,
+  // name: 'DosaPlaza',
+  // openTime: '07:00',
+  // phone: 6619563867,
+  // price: 27,
+  // rating: 4.7,
+  // shortName: 'stayfit',
+  // status: 'open',
+  // totalRating: 13,
   constructor(
     public uid: string,
     public name: string,
@@ -17,7 +32,18 @@ export class Restaurant {
     public rating: number,
     public deliveryTime: number,
     public price: number,
+    public phone?: number, //optional parameters
+    public isClose?: boolean,
+    public email?: string,
+    public city?: string,
+    public description?: string,
+    public closeTime?: string,
     public address?: string,
-    public distance?: number //optional parameter
+    public distance?: number,
+    public latitude?: number,
+    public longitude?: number,
+    public openTime?: string,
+    public status?: string,
+    public totalRating?: number
   ) {}
 }

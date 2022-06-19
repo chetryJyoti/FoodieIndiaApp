@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
 import { Cart } from 'src/app/models/cart.model';
+import { Order } from 'src/app/models/order.model';
 import { CartService } from 'src/app/services/cart/cart.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { OrdersService } from 'src/app/services/orders/orders.service';
@@ -96,11 +97,12 @@ export class CartPage implements OnInit {
   async makePayment() {
     console.log('paymentDone');
     try {
-      const data = {
+      const data: Order = {
         restaurantId: this.model.restaurant.uid,
         instruction: this.instruction ? this.instruction : '',
-        res: this.model.restaurant,
-        order: JSON.stringify(this.model.items),
+        restaurant: this.model.restaurant,
+        // order: JSON.stringify(this.model.items),
+        order:this.model.items,
         time: moment().format('lll'),
         address: this.location,
         total: this.model.totalPrice,
